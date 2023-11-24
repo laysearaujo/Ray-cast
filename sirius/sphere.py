@@ -22,19 +22,26 @@ class Sphere:
 
         delta = b * b - 4 * a * c
 
-        # Se delta negativo
         if delta < 0:
             return {
-                "color": None,
-                "distance": None,
-                "normal": None
+                "color": Color(0, 0, 0),
+                "distance": float('inf'),
+                "normal": None #TODO: Calcular normal
             }
+        
+        # Calcula soluções da equação quadrática
+        t1 = (-b - math.sqrt(delta)) / (2 * a)
+        t2 = (-b + math.sqrt(delta)) / (2 * a)
 
-        # Calcula as duas soluções da equação quadrática
-        t = (-b - math.sqrt(delta)) / (2 * a)
+        if t1 < 0 and t2 < 0:
+            return {
+                "color": Color(0, 0, 0),
+                "distance": float('inf'),
+                "normal": None #TODO: Calcular normal
+            }
 
         return {
                 "color": self.color,
-                "distance": t,
-                # "normal": self.normalAt()
+                "distance": t1 if t1 >= 0 and t1 < t2 else t2,
+                "normal": None #TODO: Calcular normal
             }
