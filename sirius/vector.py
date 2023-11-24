@@ -30,3 +30,6 @@ class Vector:
 
     def multByScalar(self, k):
         return Vector(self.x * k, self.y * k, self.z * k)
+    
+    def dot(self, other):
+        return self.x * other.x + self.y * other.y + self.z * other.z
