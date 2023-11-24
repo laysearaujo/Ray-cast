@@ -1,9 +1,9 @@
-from ray import Ray
+from .ray import Ray
 
 class Camera():
-    def __init__(self, location, focous, v_up, distance, width, height):
+    def __init__(self, location, focus, v_up, distance, width, height):
         self.location = location
-        self.v_front = focous.sub(location).normalize()
+        self.v_front = focus.sub(location).normalize()
         self.v_up = v_up
         self.v_right = self.v_front.cross(self.v_up).normalize()
         self.v_up = self.v_right.cross(self.v_front).normalize()
@@ -17,10 +17,11 @@ class Camera():
             list_aux = []
             for x in range(self.width):
                 ray = self.createRay(x, y)
-                color = scene.intersect(ray)
+                intersection_info = scene.intersect(ray)
+                color = intersection_info["color"]
                 list_aux.append(color)
             matrix.append(list_aux)
-        return matrix       
+        return matrix
     
     def createRay(self, x, y):
         vector_final = self.location

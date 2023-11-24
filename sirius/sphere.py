@@ -13,7 +13,7 @@ class Sphere:
         normal_vector = point.sub(self.center)
         return normal_vector.normalize()
 
-    def intersectRay(self, ray: Ray):
+    def intersect(self, ray: Ray):
         oc = ray.point.sub(self.center)
 
         a = ray.direction.dot(ray.direction)

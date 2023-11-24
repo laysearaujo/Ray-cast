@@ -8,7 +8,8 @@ class Plane:
         self.normal = normal
         self.color = color
 
-    def intersectRay(self, ray: Ray):
+    def intersect(self, ray: Ray):
+        print('olha aqui o vector', self.normal)
         direction_dot_normal = ray.direction.dot(self.normal)
 
         if abs(direction_dot_normal) < 1e-6:
@@ -18,7 +19,7 @@ class Plane:
                 "normal": None #TODO: Calcular normal
             }
 
-        t = (self.point - ray.point).dot(self.normal) / direction_dot_normal
+        t = self.point.sub(ray.point).dot(self.normal) / direction_dot_normal
 
         return {
                 "color": self.color,

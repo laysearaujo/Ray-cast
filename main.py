@@ -1,47 +1,65 @@
 import pygame
-import sys
+from sirius.sphere import Sphere
+from sirius.plane import Plane
+from sirius.vector import Vector
+from sirius.color import Color
+from sirius.camera import Camera
+from sirius.scene import Scene
 
-width, height = 640, 480
-screen = pygame.display.set_mode((width, height))
-clock = pygame.time.Clock()
+QUIT = 'q'
 
-# Definindo a câmera
-camera = [0, 0, -5]  # Posição da câmera
+def main():
+    pygame.init()
+    width, height = 800, 600
+    location = Vector(0, 0, 0)
+    focus = Vector(0, 0, 1)
+    v_up = Vector(0, 1, 0)
+    distance = 40
+    screen = pygame.display.set_mode((width, height))
+    pygame.display.set_caption('Ray Casting')
 
-# Definindo a esfera na cena
-sphere_pos = [0, 0, 0]  # Posição da esfera
-sphere_radius = 1  # Raio da esfera
-sphere_color = (255, 255, 255)  # Cor da esfera           
+    clock = pygame.time.Clock()
 
-def intersect_ray_sphere(origin, direction, sphere_center, sphere_radius):
-    oc = [origin[0] - sphere_center[0], origin[1] - sphere_center[1], origin[2] - sphere_center[2]]
-    a = direction[0] ** 2 + direction[1] ** 2 + direction[2] ** 2
-    b = 2 * (oc[0] * direction[0] + oc[1] * direction[1] + oc[2] * direction[2])
-    c = oc[0] ** 2 + oc[1] ** 2 + oc[2] ** 2 - sphere_radius ** 2
+    spheres = [
+        Sphere(Vector(0, 0, 0), 100, Color(255, 0, 0)),  # Esfera vermelha
+        Sphere(Vector(150, 100, 100), 50, Color(0, 255, 0))  # Esfera verde
+    ]
 
-    discriminant = b ** 2 - 4 * a * c
+    planes = [
+        Plane(Vector(10, 75, 80), Vector(0, 1, 0), Color(255, 255, 255))
+    ]
 
-    if discriminant < 0:
-        return -1  # Não há interseção
+    scene = Scene()
 
-    t1 = (-b - discriminant ** 0.5) / (2 * a)
-    t2 = (-b + discriminant ** 0.5) / (2 * a)
+    for sphere in spheres:
+        scene.addSphere(sphere)
+    
+    for plane in planes:
+        scene.addPlane(plane)
 
-    return min(t1, t2)  # Retorna o menor valor positivo de t
+    camera = Camera(location, focus, v_up, distance, width, height)
 
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                running = False
 
-# Loop principal
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+        matrix = camera.take(scene)
+        
+        # Criando uma surface a partir da matriz
+        surface = pygame.surfarray.make_surface(matrix)
 
-    ray_casting()
+        # Redimensionando a surface para o tamanho da janela
+        surface = pygame.transform.scale(surface, (width, height))
 
-    # Atualiza a tela
-    pygame.display.flip()
-    clock.tick(60)
+        # Blit da surface na tela do Pygame
+        screen.blit(surface, (0, 0))
 
-pygame.quit()
-sys.exit()
+        pygame.display.flip()
+        clock.tick(60)
+
+    pygame.quit()
+
+if __name__ == "__main__":
+    main()

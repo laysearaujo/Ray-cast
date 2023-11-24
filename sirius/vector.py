@@ -14,6 +14,7 @@ class Vector:
         self.x /= norm
         self.y /= norm
         self.z /= norm
+        return self
 
     def sub(self, other):
         return Vector(self.x - other.x, self.y - other.y, self.z - other.z)
@@ -32,4 +33,4 @@ class Vector:
         return Vector(self.x * k, self.y * k, self.z * k)
     
     def dot(self, other):
-        return self.x * other.x + self.y * other.y + self.z * other.z
+        return (self.x * other.x) + (self.y * other.y) + (self.z * other.z)

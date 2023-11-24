@@ -1,3 +1,5 @@
+from .color import Color
+
 class Scene():
     def __init__(self):
         self.spheres = []
@@ -6,23 +8,29 @@ class Scene():
     def addSphere(self, sphere):
         self.spheres.append(sphere)
 
-    def addPlanes(self, plane):
+    def addPlane(self, plane):
         self.planes.append(plane)
 
     def intersect(self, ray):
-        distance = float('inf')
-        color = None
+        closest_intersection = {
+            "distance": float('inf'),
+            "color": Color(0, 0, 0),
+            "object_hit": None
+        }
 
         for sphere in self.spheres:
-            intersect_sphere = sphere.intersect(ray).distance
-            if intersect_sphere < distance:
-                distance = intersect_sphere
-                color = sphere.intersect(ray).color
+            intersection = sphere.intersect(ray)
+            if intersection["distance"] < closest_intersection["distance"]:
+                closest_intersection["distance"] = intersection["distance"]
+                closest_intersection["color"] = intersection["color"]
+                closest_intersection["object_hit"] = sphere
 
         for plane in self.planes:
-            intersect_plane = plane.intersect(ray).distance
-            if intersect_plane < distance:
-                distance = intersect_plane
-                color = plane.intersect(ray).color
+            intersection = plane.intersect(ray)
+            if intersection["distance"] < closest_intersection["distance"]:
+                closest_intersection["distance"] = intersection["distance"]
+                closest_intersection["color"] = intersection["color"]
+                closest_intersection["object_hit"] = plane
 
-        return (distance, color)
+        print('AAAAAAAAAA', closest_intersection)
+        return closest_intersection
