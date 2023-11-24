@@ -30,24 +30,6 @@ def intersect_ray_sphere(origin, direction, sphere_center, sphere_radius):
     return min(t1, t2)  # Retorna o menor valor positivo de t
 
 
-def ray_casting():
-    for x in range(width):
-        for y in range(height):
-            # Transforma o x e y da tela em coordenadas entre -1 e 1
-            normalized_x = (2 * x - width) / width
-            normalized_y = (1 - 2 * y / height)
-
-            # Direção do raio a partir da câmera para o pixel
-            ray_direction = [normalized_x, normalized_y, 1]
-
-            # Verifica a interseção do raio com a esfera
-            t = intersect_ray_sphere(camera, ray_direction, sphere_pos, sphere_radius)
-            ray_hits_sphere = t > 0
-
-            # Se o raio atinge a esfera, pinte o pixel com a cor da esfera
-            # Senão, pinte o pixel com a cor de fundo (preto)
-            screen.set_at((x, y), sphere_color if ray_hits_sphere else (0, 0, 0))
-
 # Loop principal
 running = True
 while running:
