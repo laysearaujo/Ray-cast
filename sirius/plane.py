@@ -9,7 +9,6 @@ class Plane:
         self.color = color
 
     def intersect(self, ray: Ray):
-        print('olha aqui o vector', self.normal)
         direction_dot_normal = ray.direction.dot(self.normal)
 
         if abs(direction_dot_normal) < 1e-6:

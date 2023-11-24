@@ -32,5 +32,4 @@ class Scene():
                 closest_intersection["color"] = intersection["color"]
                 closest_intersection["object_hit"] = plane
 
-        print('AAAAAAAAAA', closest_intersection)
         return closest_intersection
