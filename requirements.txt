@@ -1,1 +1,4 @@
-pygame==2.5.2
+python==3.9.6
+opencv-python==4.8.1.78
+setuptools==68.2.2
+wheel==0.42.0

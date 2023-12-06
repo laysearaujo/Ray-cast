@@ -1,4 +1,6 @@
-# import pygame
+import cv2
+import numpy as np
+
 from sirius.sphere import Sphere
 from sirius.plane import Plane
 from sirius.vector import Vector
@@ -7,22 +9,23 @@ from sirius.camera import Camera
 from sirius.scene import Scene
 from sirius.ray import Ray
 
-QUIT = 'q'
-
 def main():
     width, height = 800, 600
-    location = Vector(0, 0, 0)
-    focus = Vector(0, 0, 1)
     v_up = Vector(0, 1, 0)
-    distance = 40
+
+    # Ajustando os parâmetros da câmera para melhor visualização
+    location = Vector(0, 0, -10)  # Posição da câmera mais recuada
+    focus = Vector(0, 0, 0)       # Alterando a direção do foco para o centro da cena
+    distance = 40                 # Reduzindo a distância da câmera
 
     spheres = [
-        Sphere(Vector(5, 5, 5), 5, Color(255, 0, 0)),  # Esfera vermelha
-        Sphere(Vector(5, 2, 2), 5, Color(0, 255, 0))  # Esfera verde
+        Sphere(Vector(-10, 0, 0), 5, Color(255, 0, 0)),     # Esfera vermelha à esquerda
+        Sphere(Vector(0, 0, 0), 5, Color(0, 255, 0)),      # Esfera verde no centro
+        Sphere(Vector(10, 0, 0), 5, Color(0, 0, 255))      # Esfera azul à direita
     ]
 
     planes = [
-        Plane(Vector(5, 0, 0), Vector(1, 1, 0), Color(255, 255, 255))
+        Plane(Vector(0, -15, 0), Vector(0, 1, 0), Color(200, 200, 200))  # Plano abaixo das esferas
     ]
 
     scene = Scene()
@@ -35,19 +38,24 @@ def main():
 
     camera = Camera(location, focus, v_up, distance, width, height)
 
-    # Teste de intersecção de raio
-    ray = Ray(Vector(0,0,0), Vector(1,1,0))
+    # # Teste de intersecção de raio
+    # ray = Ray(Vector(0,0,0), Vector(1,1,0))
+    # instersect1_color, instersect1_distance, _ = spheres[0].intersect(ray).values()
 
-    instersect1_color, instersect1_distance, _ = spheres[0].intersect(ray).values()
-    print(f'Intersecção da esfera vermelha com o raio - distancia: {instersect1_distance}, cor: {instersect1_color}')
-    instersect2_color, instersect2_distance, _ = spheres[1].intersect(ray).values()
-    print(f'Intersecção da esfera verde com o raio - distancia: {instersect2_distance}, cor: {instersect2_color}')
-    instersect3_color, instersect3_distance, _ = planes[0].intersect(ray).values()
-    print(f'Intersecção da esfera vermelha com o plano - distancia: {instersect3_distance}, cor: {instersect3_color}')
-    
     matrix = camera.take(scene)
-        
-    print(matrix)
+
+    # Convertendo a matriz de cores para uma imagem OpenCV
+    img = np.zeros((height, width, 3), dtype=np.uint8)
+
+    for y in range(height):
+        for x in range(width):
+            color = matrix[y][x]
+            img[y][x] = [int(color.r), int(color.g), int(color.b)]
+
+    # Exibir a imagem usando OpenCV
+    cv2.imshow('Render', img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 if __name__ == "__main__":
     main()
