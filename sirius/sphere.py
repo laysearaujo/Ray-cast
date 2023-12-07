@@ -26,7 +26,7 @@ class Sphere:
             return {
                 "color": Color(0, 0, 0),
                 "distance": float('inf'),
-                "normal": None #TODO: Calcular normal
+                "normal": None
             }
         
         # Calcula soluções da equação quadrática
@@ -37,11 +37,14 @@ class Sphere:
             return {
                 "color": Color(0, 0, 0),
                 "distance": float('inf'),
-                "normal": None #TODO: Calcular normal
+                "normal": None
             }
 
+        intersection_point = ray.point.add(ray.direction.multByScalar(t1 if t1 >= 0 and t1 < t2 else t2))
+        normal = self.normalAt(intersection_point).normalize()
+
         return {
-                "color": self.color,
-                "distance": t1 if t1 >= 0 and t1 < t2 else t2,
-                "normal": None #TODO: Calcular normal
-            }
+            "color": self.color,
+            "distance": t1 if t1 >= 0 and t1 < t2 else t2,
+            "normal": normal
+        }
