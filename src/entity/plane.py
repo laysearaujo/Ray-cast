@@ -1,6 +1,6 @@
-from .vector import Vector
-from .color import Color
-from .ray import Ray
+from ..geometry.vector import Vector
+from ..graphic.color import Color
+from ..geometry.ray import Ray
 
 class Plane:
     def __init__(self, point: Vector, normal: Vector, color: Color):

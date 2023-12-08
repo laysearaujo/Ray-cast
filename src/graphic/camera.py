@@ -1,5 +1,5 @@
 import math
-from .ray import Ray
+from ..geometry.ray import Ray
 
 class Camera:
     def __init__(self, location, focus, v_up, distance, width, height, fov=90):

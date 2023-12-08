@@ -1,4 +1,4 @@
-from .color import Color
+from ..graphic.color import Color
 
 class Scene():
     def __init__(self):

@@ -1,12 +1,12 @@
 import cv2
 import numpy as np
 
-from sirius.sphere import Sphere
-from sirius.plane import Plane
-from sirius.vector import Vector
-from sirius.color import Color
-from sirius.camera import Camera
-from sirius.scene import Scene
+from src.entity.sphere import Sphere
+from src.entity.plane import Plane
+from src.geometry.vector import Vector
+from src.graphic.color import Color
+from src.graphic.camera import Camera
+from src.entity.scene import Scene
 
 def main():
     width, height = 800, 600
