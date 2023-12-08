@@ -6,7 +6,7 @@ from src.entity.plane import Plane
 from src.geometry.vector import Vector
 from src.graphic.color import Color
 from src.graphic.camera import Camera
-from src.entity.scene import Scene
+from src.graphic.scene import Scene
 
 def main():
     width, height = 800, 600
