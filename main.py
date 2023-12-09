@@ -14,9 +14,9 @@ def main():
     v_up = Vector(0, 1, 0)
 
     # Ajustando os parâmetros da câmera
-    location = Vector(0, 0, 150)
-    focus = Vector(0, 0, 0)
-    distance = 10
+    location = Vector(0, 0, 100)
+    focus = Vector(50, 0, 0)
+    distance = 100
 
     # Criando a malha triangular e adicionando triângulos a ela
     mesh = TriangularMesh(vertices, triangles)
