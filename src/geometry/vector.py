@@ -1,10 +1,13 @@
 import math
 
 class Vector:
-    def __init__(self, x, y, z):
+    def __init__(self, x: float, y: float, z: float):
         self.x = x
         self.y = y
         self.z = z
+    
+    def __str__(self):
+        return f'[{self.x},{self.y},{self.z}]'
     
     def norm(self):
         return math.sqrt(self.x * self.x + self.y * self.y + self.z * self.z)

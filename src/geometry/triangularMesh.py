@@ -1,40 +1,36 @@
-from ..entity.triangle import Triangle
+from typing import List
+
+from src.entity.triangle import Triangle
+from src.geometry.vector import Vector
+from src.geometry.ray import Ray
 
 class TriangularMesh:
-    def __init__(self):
-        self.triangles = []  # Lista de triângulos na malha
+    def __init__(self, vertices: List[Vector] = [], triangles: List[Triangle] = []):
+        self.vertices = vertices
+        self.triangles = triangles
+        self.normals = [triangle.normal() for triangle in triangles]
+
+        '''
+        # Print para debugar a criação de triângulos na mascara
+        for triangle in self.triangles:
+            print(triangle)
+        '''
+
+    def intersect(self, ray: Ray):
+        closest_intersection = {
+            "distance": float('inf'),
+            "color": None,
+            "normal": None
+        }
+        for triangle in self.triangles:
+            intersection = triangle.intersect(ray)
+            if intersection and intersection["distance"] < closest_intersection["distance"]:
+                closest_intersection = intersection
+        return closest_intersection
+
+    def addVertice(self, vertice: Vector):
+        self.vertices.append(vertice)
 
     def addTriangle(self, triangle: Triangle):
         self.triangles.append(triangle)
-
-    def intersectRay(self, ray):
-        closest_hit = float('inf')
-        hit_color = None
-        hit_normal = None
-
-        for triangle in self.triangles:
-            # Encontrar a interseção do raio com o plano do triângulo
-            intersection_info = triangle.intersect(ray)
-
-            if intersection_info["hit"]:
-                # Verificar se o ponto de interseção está dentro do triângulo
-                intersection_point = intersection_info["point"]
-                is_inside = triangle.isPointInside(intersection_point)
-
-                if is_inside and intersection_info["distance"] < closest_hit:
-                    closest_hit = intersection_info["distance"]
-                    hit_color = intersection_info["color"]
-                    hit_normal = intersection_info["normal"]
-
-        if hit_color:
-            return {
-                "color": hit_color,
-                "normal": hit_normal,
-                "distance": closest_hit
-            }
-        else:
-            return {
-                "color": None,
-                "normal": None,
-                "distance": float('inf')
-            }
+        self.normals.append(triangle.normal())
