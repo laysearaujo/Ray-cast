@@ -1,55 +1,34 @@
-import cv2
-import numpy as np
-
-from src.entity.sphere import Sphere
-from src.entity.plane import Plane
 from src.geometry.vector import Vector
-from src.graphic.color import Color
-from src.graphic.camera import Camera
-from src.graphic.scene import Scene
+from src.entity.triangle import Triangle
+from src.geometry.ray import Ray
 
-def main():
-    width, height = 800, 600
-    v_up = Vector(0, 1, 0)
+# Criar triângulos de teste
+vertex1 = Vector(0, 0, 0)
+vertex2 = Vector(1, 0, 0)
+vertex3 = Vector(0, 1, 0)
+normal = Vector(0, 0, 1)
+triangle = Triangle(vertex1, vertex2, vertex3, normal)
 
-    # Ajustando os parâmetros da câmera
-    location = Vector(0, 0, -10) 
-    focus = Vector(0, 0, 0)
-    distance = 10
+# Criar um raio de teste
+ray_origin = Vector(0.1, 0.1, -1)
+ray_direction = Vector(0, 0, 1)
+ray = Ray(ray_origin, ray_direction)
 
-    spheres = [
-        Sphere(Vector(-10, 0, 0), 2, Color(255, 0, 0)),     # Esfera vermelha à esquerda
-        Sphere(Vector(0, 0, 0), 3, Color(0, 255, 0)),      # Esfera verde no centro
-        Sphere(Vector(10, 0, 0), 4, Color(0, 0, 255))      # Esfera azul à direita
-    ]
+# Testar a interseção entre o raio e o triângulo
+intersection = triangle.intersect(ray)
 
-    planes = [
-        Plane(Vector(0, -15, 0), Vector(0, 1, 0), Color(200, 200, 200))  # Plano abaixo das esferas
-    ]
+if intersection:
+    print("Interseção encontrada!")
+    print(type(intersection))
+    for key in intersection:
+        print(f"{key}: {intersection[key]}")
+else:
+    print("Nenhuma interseção encontrada.")
 
-    scene = Scene()
-
-    for sphere in spheres:
-        scene.addSphere(sphere)
-    
-    for plane in planes:
-        scene.addPlane(plane)
-
-    camera = Camera(location, focus, v_up, distance, width, height)
-
-    matrix = camera.take(scene)
-
-    # Convertendo a matriz de cores para uma imagem OpenCV
-    img = np.zeros((height, width, 3), dtype=np.uint8)
-
-    for y in range(height):
-        for x in range(width):
-            color = matrix[y][x]
-            img[y][x] = [int(color.r), int(color.g), int(color.b)]
-
-    cv2.imshow('Render', img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-
-if __name__ == "__main__":
-    main()
+if intersection:
+    print("Interseção encontrada!")
+    print("Vetor Normal:", intersection["normal"])
+    print("Cor:", intersection["color"])
+    print("Distância ao longo do raio:", intersection["t"])
+else:
+    print("Nenhuma interseção encontrada.")
