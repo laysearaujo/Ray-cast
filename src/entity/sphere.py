@@ -1,6 +1,6 @@
-from ..geometry.vector import Vector
-from ..graphic.color import Color
-from ..geometry.ray import Ray
+from src.geometry.vector import Vector
+from src.graphic.color import Color
+from src.geometry.ray import Ray
 import math
 
 class Sphere:

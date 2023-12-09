@@ -1,4 +1,4 @@
-from .vector import Vector
+from src.geometry.vector import Vector
 
 class Ray():
     def __init__(self, point: Vector, direction: Vector):
