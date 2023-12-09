@@ -10,13 +10,13 @@ from src.geometry.triangularMesh import TriangularMesh
 from src.data.SecondDeliveryTestData import spheres, planes, vertices, triangles
 
 def main():
-    width, height = 800, 600
+    width, height = 300, 300
     v_up = Vector(0, 1, 0)
 
     # Ajustando os parâmetros da câmera
     location = Vector(0, 0, 150)
     focus = Vector(0, 0, 0)
-    distance = 100
+    distance = 10
 
     # Criando a malha triangular e adicionando triângulos a ela
     mesh = TriangularMesh(vertices, triangles)

@@ -29,5 +29,5 @@ planes = []
 
 # Criando vértices e triângulos a partir de arquivo .obj
 current_file_dir = os.path.dirname(os.path.abspath(__file__))
-obj_filename = os.path.join(current_file_dir, "diamond.obj")
+obj_filename = os.path.join(current_file_dir, "humanoid.obj")
 vertices, triangles = Loaders.importObjFile(obj_filename)

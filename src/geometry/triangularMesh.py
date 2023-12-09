@@ -10,9 +10,11 @@ class TriangularMesh:
         self.triangles = triangles
         self.normals = [triangle.normal() for triangle in triangles]
 
-        # Just for debugging
+        '''
+        # Print para debugar a criação de triângulos na mascara
         for triangle in self.triangles:
             print(triangle)
+        '''
 
     def intersect(self, ray: Ray):
         closest_intersection = {

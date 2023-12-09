@@ -1,4 +1,5 @@
 import math
+import concurrent.futures 
 
 from src.geometry.ray import Ray
 from src.geometry.vector import Vector
@@ -17,15 +18,19 @@ class Camera:
         self.pixel_width = 2 * distance * math.tan(math.radians(90) / 2) / height
 
     def take(self, scene: Scene):
-        matrix = []
-        for y in range(self.height):
-            list_aux = []
-            for x in range(self.width):
-                ray = self.createRay(x, y)
-                intersection_info = scene.intersect(ray)
-                color = intersection_info["color"]
-                list_aux.append(color)
-            matrix.append(list_aux)
+        def process_pixel(y, x):
+            ray = self.createRay(x, y)
+            intersection_info = scene.intersect(ray)
+            return intersection_info["color"]
+
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            matrix = [[None for _ in range(self.width)] for _ in range(self.height)]
+            futures = {(executor.submit(process_pixel, y, x)): (y, x) for y in range(self.height) for x in range(self.width)}
+
+            for future in concurrent.futures.as_completed(futures):
+                y, x = futures[future]
+                matrix[y][x] = future.result()
+
         return matrix
     
     def createRay(self, x: float, y: float):
