@@ -1,7 +1,8 @@
-from src.geometry.vector import Vector
-from src.graphic.color import Color
-from src.geometry.ray import Ray
 import math
+
+from src.geometry.vector import Vector
+from src.geometry.ray import Ray
+from src.graphic.color import Color
 
 class Sphere:
     def __init__(self, center: Vector, radius: float, color: Color):

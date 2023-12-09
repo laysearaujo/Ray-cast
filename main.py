@@ -1,14 +1,13 @@
 import cv2
 import numpy as np
 
-from src.entity.sphere import Sphere
-from src.entity.plane import Plane
-from src.entity.triangle import Triangle
-from src.graphic.color import Color
 from src.graphic.camera import Camera
 from src.graphic.scene import Scene
 from src.geometry.vector import Vector
 from src.geometry.triangularMesh import TriangularMesh
+
+from src.data.FirstDeliveryTestData import spheres, planes
+from src.data.SecondDeliveryTestData import vertices, triangles
 
 def main():
     width, height = 800, 600
@@ -18,33 +17,6 @@ def main():
     location = Vector(0, 0, -10)
     focus = Vector(0, 0, 0)
     distance = 10
-
-    # Definição das esferas
-    spheres = [
-        Sphere(Vector(-10, 0, 0), 2, Color(255, 0, 0)), # Esfera vermelha
-        Sphere(Vector(0, 8, 0), 3, Color(0, 255, 0)), # Esfera verde
-        Sphere(Vector(10, 0, 0), 4, Color(0, 0, 255)), # Esfera azul
-    ]
-
-    # Definição dos planos
-    planes = [
-        Plane(Vector(0, -15, 0), Vector(0, 1, 0), Color(200, 200, 200)), # Plano cinza
-    ]
-
-    # Criando vértices e triângulos para a malha
-    vertices = [
-        Vector(4, 0, 2), Vector(3, 2, 2), Vector(5, 0, 2),
-        Vector(-2, -5, 2), Vector(0, -1, 3), Vector(8, -1, 2), 
-        Vector(-3, 4, 2), Vector(-6, 1, 2), Vector(-4, 6, 3),
-        Vector(4, -1, 2), Vector(5, 2, 2), Vector(1, -1, 7),
-    ]
-
-    triangles = [
-        Triangle(vertices[0], vertices[1], vertices[2], Color(128, 0, 128)), # Triângulo roxo
-        Triangle(vertices[3], vertices[4], vertices[5], Color(0, 255, 255)),  # Triângulo azul
-        Triangle(vertices[6], vertices[7], vertices[8], Color(255, 0, 255)),  # Triângulo rosa
-        Triangle(vertices[9], vertices[10], vertices[11], Color(255, 165, 0)), # Triângulo amarelo
-    ]
 
     # Criando a malha triangular e adicionando triângulos a ela
     mesh = TriangularMesh(vertices, triangles)
