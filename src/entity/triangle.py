@@ -7,6 +7,9 @@ class Triangle:
         self.vertices = [vertex1, vertex2, vertex3]
         self.color = color
 
+    def __str__(self):
+        return f'[ {self.vertices[0]} , {self.vertices[1]} , {self.vertices[1]} ] - Color: {self.color}'
+
     def normal(self):
         edge1 = self.vertices[1].sub(self.vertices[0])
         edge2 = self.vertices[2].sub(self.vertices[0])

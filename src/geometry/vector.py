@@ -6,6 +6,9 @@ class Vector:
         self.y = y
         self.z = z
     
+    def __str__(self):
+        return f'[{self.x},{self.y},{self.z}]'
+    
     def norm(self):
         return math.sqrt(self.x * self.x + self.y * self.y + self.z * self.z)
     
