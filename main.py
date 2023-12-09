@@ -6,8 +6,8 @@ from src.graphic.scene import Scene
 from src.geometry.vector import Vector
 from src.geometry.triangularMesh import TriangularMesh
 
-from src.data.FirstDeliveryTestData import spheres, planes
-from src.data.SecondDeliveryTestData import vertices, triangles
+# from src.data.FirstDeliveryTestData import spheres, planes
+from src.data.SecondDeliveryTestData import spheres, planes, vertices, triangles
 
 def main():
     width, height = 800, 600
