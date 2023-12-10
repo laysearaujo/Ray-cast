@@ -9,10 +9,10 @@ from src.utils.loaders import Loaders
 
 def main():
     # Carregar vértices e triângulos do arquivo OBJ
-    vertices, triangles = Loaders.importObjFile('src/data/diamond.obj')
+    vertices, triangles = Loaders.importObjFile('src/data/humanoid.obj')
 
     # Ajustar o tamanho da janela
-    width, height = 800, 600
+    width, height = 400, 300
     v_up = Vector(0, 1, 0)
 
     # Calcular o centro dos vértices para posicionar a câmera
@@ -22,7 +22,7 @@ def main():
     center = center.multByScalar(1 / len(vertices))
 
     # Ajustar a posição e a distância da câmera para enquadrar o modelo
-    location = Vector(center.x, center.y, center.z + 100)
+    location = Vector(center.x, center.y, center.z + 50)
     focus = center
     distance = 100
 
