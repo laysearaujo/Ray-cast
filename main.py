@@ -5,39 +5,39 @@ from src.graphic.camera import Camera
 from src.graphic.scene import Scene
 from src.geometry.vector import Vector
 from src.geometry.triangularMesh import TriangularMesh
-
-# from src.data.FirstDeliveryTestData import spheres, planes
-from src.data.SecondDeliveryTestData import spheres, planes, vertices, triangles
+from src.utils.loaders import Loaders
 
 def main():
-    width, height = 300, 300
+    # Carregar vértices e triângulos do arquivo OBJ
+    vertices, triangles = Loaders.importObjFile('src/data/diamond.obj')
+
+    # Ajustar o tamanho da janela
+    width, height = 800, 600
     v_up = Vector(0, 1, 0)
 
-    # Ajustando os parâmetros da câmera
-    location = Vector(0, 0, 100)
-    focus = Vector(50, 0, 0)
+    # Calcular o centro dos vértices para posicionar a câmera
+    center = Vector(0, 0, 0)
+    for vertex in vertices:
+        center = center.add(vertex)
+    center = center.multByScalar(1 / len(vertices))
+
+    # Ajustar a posição e a distância da câmera para enquadrar o modelo
+    location = Vector(center.x, center.y, center.z + 100)
+    focus = center
     distance = 100
 
-    # Criando a malha triangular e adicionando triângulos a ela
+    # Criar a malha triangular e adicionar os triângulos a ela
     mesh = TriangularMesh(vertices, triangles)
 
-    # Criação da cena
+    # Criar a cena e adicionar a malha
     scene = Scene()
-
-    # Adição de esferas, planos e triângulos à cena
-    for sphere in spheres:
-        scene.addSphere(sphere)
-    for plane in planes:
-        scene.addPlane(plane)
-    
-    # Adição da máscara
     scene.addMesh(mesh)
 
-    # Configuração da câmera e geração da imagem
+    # Configurar a câmera e gerar a imagem
     camera = Camera(location, focus, v_up, distance, width, height)
     matrix = camera.take(scene)
 
-    # Conversão da matriz de cores para uma imagem OpenCV
+    # Converter a matriz de cores para uma imagem OpenCV
     img = np.zeros((height, width, 3), dtype=np.uint8)
     for y in range(height):
         for x in range(width):
