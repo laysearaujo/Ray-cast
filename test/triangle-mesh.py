@@ -14,7 +14,7 @@ from src.utils.loaders import Loaders
 
 def main():
     # Carregar vértices e triângulos do arquivo OBJ
-    vertices, triangles = Loaders.importObjFile('src/assets/humanoid.obj')
+    vertices, triangles = Loaders.importObjFile('src/assets/diamond.obj')
 
     # Ajustar o tamanho da janela
     width, height = 400, 300
