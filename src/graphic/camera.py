@@ -15,7 +15,7 @@ class Camera:
         self.width = width
         self.height = height
         self.pixel_height = 2 * distance * math.tan(math.radians(90) / 2) / height
-        self.pixel_width = 2 * distance * math.tan(math.radians(90) / 2) / height
+        self.pixel_width = 2 * self.distance * math.tan(math.radians(90) / 2) / self.width
 
     def take(self, scene: Scene):
         def process_pixel(y, x):

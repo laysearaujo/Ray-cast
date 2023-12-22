@@ -1,4 +1,5 @@
 import cv2
+import math
 import numpy as np
 
 from src.graphic.camera import Camera
@@ -6,24 +7,13 @@ from src.graphic.scene import Scene
 from src.geometry.vector import Vector
 from src.geometry.triangularMesh import TriangularMesh
 from src.utils.loaders import Loaders
-from src.geometry.transformation import Transformation  # Importa a classe Transformation
 
 def main():
     # Carregar vértices e triângulos do arquivo OBJ
     vertices, triangles = Loaders.importObjFile('src/assets/humanoid.obj')
 
-    # Imprimir os vértices antes da transformação
-    # print("Vértices antes da transformação:")
-    # for vertex in vertices:
-    #     print(vertex)  # Isso imprimirá cada objeto Vector antes da transformação
-
-    # Aplicar transformação de rotação de 180 graus no eixo X
-    vertices = Transformation.rotate_180_x(vertices)
-
-    # Imprimir os vértices depois da transformação
-    # print("\nVértices depois da transformação:")
-    # for vertex in vertices:
-    #     print(vertex)  # Isso imprimirá cada objeto Vector depois da transformação
+    # Aplicar transformação de rotação de 90 graus no eixo X
+    rotated_vertices = [vertex.rotateY(math.pi / 2) for vertex in vertices]
 
     # Ajustar o tamanho da janela
     width, height = 400, 300
@@ -42,31 +32,43 @@ def main():
 
     # Criar a malha triangular e adicionar os triângulos a ela
     mesh = TriangularMesh(vertices, triangles)
+    mesh_rotated = TriangularMesh(rotated_vertices, triangles)
 
-    # Criar a cena e adicionar a malha
+    for i, vertex in enumerate(mesh.vertices):
+        mesh_rotated.vertices[i] = vertex.rotateY(math.pi / 2)
+
+    # Criar a cena e adicionar as malhas
     scene = Scene()
     scene.addMesh(mesh)
+    scene_rotated = Scene()
+    scene_rotated.addMesh(mesh_rotated)
 
-    # Configurar a câmera e gerar a imagem
+    # Configurar a câmera e gerar as imagens para ambas as cenas
     camera = Camera(location, focus, v_up, distance, width, height)
     matrix = camera.take(scene)
+    matrix_rotated = camera.take(scene_rotated)
 
-    # Converter a matriz de cores para uma imagem OpenCV
+    # Converter as matrizes de cores para imagens OpenCV (original e rotacionada)
     img = np.zeros((height, width, 3), dtype=np.uint8)
+    img_transformed = np.zeros((height, width, 3), dtype=np.uint8)
+
     for y in range(height):
         for x in range(width):
             color = matrix[y][x]
             img[y][x] = [int(color.r), int(color.g), int(color.b)]
 
-    # Exibir a imagem antes da transformação
-    cv2.imshow('Render Antes', img)
-    cv2.waitKey(0)
+            color_rotated = matrix_rotated[y][x]
+            img_transformed[y][x] = [int(color_rotated.r), int(color_rotated.g), int(color_rotated.b)]
 
-    # Aplicar transformação na imagem (rotação 180 graus)
-    img_transformed = cv2.flip(img, -1)
+            # print(img == img_transformed)/
 
-    # Exibir a imagem depois da transformação
-    cv2.imshow('Render Depois', img_transformed)
+    # Criar a imagem combinada (original e rotacionada)
+    combined_img = np.zeros((height, 2 * width, 3), dtype=np.uint8)
+    combined_img[:height, :width, :] = img
+    combined_img[:height, width:2 * width, :] = img_transformed
+
+    # Exibir as duas imagens lado a lado
+    cv2.imshow('Imagem Original vs. Rotacionada', combined_img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 

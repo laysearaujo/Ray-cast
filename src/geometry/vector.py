@@ -37,3 +37,25 @@ class Vector:
     
     def dot(self, other):
         return (self.x * other.x) + (self.y * other.y) + (self.z * other.z)
+    
+    def rotateX (self, alpha):
+        ry = math.cos(alpha) * self.y - math.sin(alpha) * self.z
+        rz = math.sin(alpha) * self.y + math.cos(alpha) * self.z
+
+        return Vector(self.x, ry, rz)
+
+    def rotateY(self, alpha):
+        rx = math.cos(alpha) * self.x + math.sin(alpha) * self.z
+        rz = -math.sin(alpha) * self.x + math.cos(alpha) * self.z
+
+        return Vector(rx, self.y, rz)
+
+    def rotateZ(self, alpha):
+        rx = math.cos(alpha) * self.x - math.sin(alpha) * self.y
+        ry = math.sin(alpha) * self.x + math.cos(alpha) * self.y
+
+        return Vector(rx, ry, self.z)
+
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y and self.z == other.z
+    

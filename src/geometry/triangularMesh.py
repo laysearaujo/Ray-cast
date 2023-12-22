@@ -10,12 +10,6 @@ class TriangularMesh:
         self.triangles = triangles
         self.normals = [triangle.normal() for triangle in triangles]
 
-        '''
-        # Print para debugar a criação de triângulos na mascara
-        for triangle in self.triangles:
-            print(triangle)
-        '''
-
     def intersect(self, ray: Ray):
         closest_intersection = {
             "distance": float('inf'),
@@ -28,9 +22,23 @@ class TriangularMesh:
                 closest_intersection = intersection
         return closest_intersection
 
-    def addVertice(self, vertice: Vector):
+    def addVertex(self, vertice: Vector):
         self.vertices.append(vertice)
 
     def addTriangle(self, triangle: Triangle):
         self.triangles.append(triangle)
         self.normals.append(triangle.normal())
+
+    def __eq__(self, other):
+        if len(self.vertices) != len(other.vertices) or len(self.triangles) != len(other.triangles):
+            return False
+        
+        for i in range(len(self.vertices)):
+            if self.vertices[i] != other.vertices[i]:
+                return False
+        
+        for i in range(len(self.triangles)):
+            if self.triangles[i] != other.triangles[i]:
+                return False
+        
+        return True
