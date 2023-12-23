@@ -12,9 +12,19 @@ def main():
     # Carregar vértices e triângulos do arquivo OBJ
     vertices, triangles = Loaders.importObjFile('src/assets/humanoid.obj')
 
+    triangles_rotated = []
+
     # Aplicar transformação de rotação de 90 graus no eixo X
     rotated_vertices = [vertex.rotateY(math.pi / 2) for vertex in vertices]
 
+    for triangle in triangles:
+        triangle_rotated_vertices = [vertex.rotateY(math.pi / 2) for vertex in triangle.vertices]
+        triangles_rotated.append(
+            Triangle(triangle_rotated_vertices[0], 
+            triangle_rotated_vertices[1], 
+            triangle_rotated_vertices[2], 
+            triangle.color ))
+            
     # Ajustar o tamanho da janela
     width, height = 400, 300
     v_up = Vector(0, 1, 0)
@@ -32,7 +42,7 @@ def main():
 
     # Criar a malha triangular e adicionar os triângulos a ela
     mesh = TriangularMesh(vertices, triangles)
-    mesh_rotated = TriangularMesh(rotated_vertices, triangles)
+    mesh_rotated = TriangularMesh(rotated_vertices, triangles_rotated)
 
     for i, vertex in enumerate(mesh.vertices):
         mesh_rotated.vertices[i] = vertex.rotateY(math.pi / 2)
@@ -60,7 +70,7 @@ def main():
             color_rotated = matrix_rotated[y][x]
             img_transformed[y][x] = [int(color_rotated.r), int(color_rotated.g), int(color_rotated.b)]
 
-            # print(img == img_transformed)/
+           # print(img == img_transformed)
 
     # Criar a imagem combinada (original e rotacionada)
     combined_img = np.zeros((height, 2 * width, 3), dtype=np.uint8)
