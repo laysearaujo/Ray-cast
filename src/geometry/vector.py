@@ -56,6 +56,17 @@ class Vector:
 
         return Vector(rx, ry, self.z)
 
+    def translateX (self, num):
+        
+        return Vector(self.x + num, self.y, self.z)
+
+    def translateY (self, num):
+        
+        return Vector(self.x, self.y + num, self.z)
+    
+    def translateZ (self, num):
+        
+        return Vector(self.x, self.y, self.z + num)
+
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y and self.z == other.z
-    
