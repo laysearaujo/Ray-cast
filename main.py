@@ -5,7 +5,7 @@ import numpy as np
 from src.graphic.camera import Camera
 from src.graphic.scene import Scene
 from src.geometry.vector import Vector
-from src.geometry.triangularMesh import TriangularMesh
+from src.geometry.triangularMesh import TriangularMesh, Triangle
 from src.utils.loaders import Loaders
 
 def main():
