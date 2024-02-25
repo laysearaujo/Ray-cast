@@ -57,16 +57,29 @@ class Vector:
         return Vector(rx, ry, self.z)
 
     def translateX (self, num):
-        
         return Vector(self.x + num, self.y, self.z)
 
     def translateY (self, num):
-        
         return Vector(self.x, self.y + num, self.z)
     
     def translateZ (self, num):
-        
         return Vector(self.x, self.y, self.z + num)
 
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y and self.z == other.z
+
+    def angle(self, other):
+        EPSILON = 1e-6
+        cost = self.dot(other) / (self.norm() * other.norm())
+        cost = min(max(cost, -1 + EPSILON), 1.0 - EPSILON)
+
+        return math.acos(cost)
+
+
+
+# double Vetor::angle(const Vetor &other) const {
+#     double cost = dot(other) / (norm() * other.norm());
+#     cost = std::min(std::max(cost, -1.0 + EPSILON), 1.0 - EPSILON);
+
+#     return acos(cost);
+# }

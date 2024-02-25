@@ -1,12 +1,14 @@
 from src.geometry.vector import Vector
 from src.geometry.ray import Ray
 from src.graphic.color import Color
+from src.graphic.material import Material
 
 class Triangle:
-    def __init__(self, vertex1: Vector, vertex2: Vector, vertex3: Vector, color: Color):
+    def __init__(self, vertex1: Vector, vertex2: Vector, vertex3: Vector, color: Color, material: Material):
         self.vertices = [vertex1, vertex2, vertex3]
         self.color = color
-
+        self.material = material
+        
     def __str__(self):
         return f'[ {self.vertices[0]} , {self.vertices[1]} , {self.vertices[2]} ] - Color: {self.color}'
 

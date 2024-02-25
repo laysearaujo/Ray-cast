@@ -1,12 +1,14 @@
 from src.geometry.vector import Vector
 from src.geometry.ray import Ray
 from src.graphic.color import Color
+from src.graphic.material import Material
 
 class Plane:
-    def __init__(self, point: Vector, normal: Vector, color: Color):
+    def __init__(self, point: Vector, normal: Vector, color: Color, material: Material):
         self.point = point
         self.normal = normal.normalize()  # Normalizando a normal para ter certeza
         self.color = color
+        self.material = material
 
     def intersect(self, ray: Ray):
         direction_dot_normal = ray.direction.dot(self.normal)

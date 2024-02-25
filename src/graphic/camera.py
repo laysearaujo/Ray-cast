@@ -20,8 +20,8 @@ class Camera:
     def take(self, scene: Scene):
         def process_pixel(y, x):
             ray = self.createRay(x, y)
-            intersection_info = scene.intersect(ray)
-            return intersection_info["color"]
+            intersection_color = scene.traceRay(ray, 0)
+            return intersection_color
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
             matrix = [[None for _ in range(self.width)] for _ in range(self.height)]

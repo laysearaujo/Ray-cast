@@ -3,12 +3,14 @@ import math
 from src.geometry.vector import Vector
 from src.geometry.ray import Ray
 from src.graphic.color import Color
+from src.graphic.material import Material
 
 class Sphere:
-    def __init__(self, center: Vector, radius: float, color: Color):
+    def __init__(self, center: Vector, radius: float, color: Color, material: Material):
         self.center = center
         self.radius = radius
         self.color = color
+        self.material = material
 
     def normalAt(self, point: Vector):
         normal_vector = point.sub(self.center)
