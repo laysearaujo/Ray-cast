@@ -95,7 +95,7 @@ class Scene():
 #     return color;
 # }
     def phong(self, ray: Ray, surface: Surface, layer: int, material: Material):
-        if layer > 3: 
+        if layer > 4: 
             return Color(0, 0, 0)
         
         color = multColor(self.enviroment, material.ka)
@@ -120,6 +120,25 @@ class Scene():
                     layer+1
                 ),
                 material.kr
+            )
+        )
+
+        color = addColor(
+            color,
+            multColor(
+                self.traceRay(
+                    Ray(
+                        ray.pointAt(
+                            surface.distance + 0.01
+                        ),
+                        surface.getRefraction(
+                            ray.direction.multByScalar(-1.0), 
+                            material.ior
+                        )
+                    ), 
+                    layer+1
+                ),
+                material.kt
             )
         )
 
