@@ -32,7 +32,7 @@ class Sphere:
                 "normal": None
             }
         
-        # Calcula soluções da equação quadrática
+        # Calcula as soluções da equação quadrática
         t1 = (-b - math.sqrt(delta)) / (2 * a)
         t2 = (-b + math.sqrt(delta)) / (2 * a)
 
@@ -51,3 +51,22 @@ class Sphere:
             "distance": t1 if t1 >= 0 and t1 < t2 else t2,
             "normal": normal
         }
+    
+    def bounds(self):
+        # Retorna os limites (bounds) da esfera
+        min_bound = self.center.sub(Vector(self.radius, self.radius, self.radius))
+        max_bound = self.center.add(Vector(self.radius, self.radius, self.radius))
+        return min_bound, max_bound
+
+    def intersect_bounds(self, bounds):
+        # Determina se a esfera intersecta com os limites do nó do octree
+        min_bound, max_bound = bounds
+        sphere_min, sphere_max = self.bounds()
+
+        # Verificar interseção em cada dimensão (x, y, z)
+        intersects_x = sphere_max.x >= min_bound.x and sphere_min.x <= max_bound.x
+        intersects_y = sphere_max.y >= min_bound.y and sphere_min.y <= max_bound.y
+        intersects_z = sphere_max.z >= min_bound.z and sphere_min.z <= max_bound.z
+
+        # Se houver interseção em todas as dimensões, a esfera intersecta os limites do nó do octree
+        return intersects_x and intersects_y and intersects_z

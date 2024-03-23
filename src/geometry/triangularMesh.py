@@ -42,3 +42,28 @@ class TriangularMesh:
                 return False
         
         return True
+
+    def bounds(self):
+        # Inicializa os limites com os valores extremos para min e max
+        min_bound = Vector(float('inf'), float('inf'), float('inf'))
+        max_bound = Vector(float('-inf'), float('-inf'), float('-inf'))
+
+        # Encontra os limites da malha triangular
+        for vertex in self.vertices:
+            min_bound = min_bound.min(vertex)
+            max_bound = max_bound.max(vertex)
+
+        return min_bound, max_bound
+
+    def intersect_bounds(self, bounds):
+        # Verifica se os limites da malha intersectam com os limites do nó do octree
+        min_bound, max_bound = bounds
+        mesh_min, mesh_max = self.bounds()
+
+        # Verifica se há interseção em cada dimensão (x, y, z)
+        intersects_x = mesh_max.x >= min_bound.x and mesh_min.x <= max_bound.x
+        intersects_y = mesh_max.y >= min_bound.y and mesh_min.y <= max_bound.y
+        intersects_z = mesh_max.z >= min_bound.z and mesh_min.z <= max_bound.z
+
+        # Retorna True se houver interseção em todas as dimensões, caso contrário, False
+        return intersects_x and intersects_y and intersects_z
