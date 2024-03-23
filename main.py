@@ -23,13 +23,6 @@ def main():
     focus = Vector(0, 0, 0)       # Alterando a direção do foco para o centro da cena
     distance = 70                 # Reduzindo a distância da câmera
 
-    # 0.5, // kd
-    # 0.9, // ks
-    # 0.1, // ka
-    # 0.1, // kr
-    # 0.1, // kt
-    # 1.0 // roughnes
-
     material = Material(
         Color(125, 125, 125),
         Color(200, 200, 200),
