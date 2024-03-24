@@ -8,6 +8,7 @@ from src.geometry.surface import Surface
 from src.utils.colorHelper import multColor, addColor, multColorByEscalar
 from src.graphic.light import Light
 from src.graphic.material import Material
+from src.geometry.octree import Octree
 
 import math
 
@@ -18,6 +19,7 @@ class Scene():
         self.meshes = []
         self.lights = []
         self.enviroment = Color(255, 255, 255)
+        self.octree = None
 
     def addSphere(self, sphere: Sphere):
         self.spheres.append(sphere)
@@ -31,6 +33,9 @@ class Scene():
     def addLight(self, light: Light):
         self.lights.append(light)
 
+    def setOctree(self, octree: Octree):
+        self.octree = octree  # Defina o octree recebido como atributo da cena
+
     def intersect(self, ray: Ray):
         closest_intersection = {
             "distance": float('inf'),
@@ -39,38 +44,43 @@ class Scene():
             "object_hit": None
         }
 
-        # Verificar interseções com esferas
-        for sphere in self.spheres:
-            intersection = sphere.intersect(ray)
-            if intersection["distance"] < closest_intersection["distance"]:
-                closest_intersection = {
-                    "distance": intersection["distance"],
-                    "color": intersection["color"],
-                    "normal": intersection["normal"],
-                    "object_hit": sphere
-                }
+        if self.octree:
+            # Usar o octree para a interseção de raio
+            closest_intersection = self.octree.intersect(ray)
+            # print(closest_intersection)
+        else:
+            # Verificar interseções com esferas
+            for sphere in self.spheres:
+                intersection = sphere.intersect(ray)
+                if intersection["distance"] < closest_intersection["distance"]:
+                    closest_intersection = {
+                        "distance": intersection["distance"],
+                        "color": intersection["color"],
+                        "normal": intersection["normal"],
+                        "object_hit": sphere
+                    }
 
-        # Verificar interseções com planos
-        for plane in self.planes:
-            intersection = plane.intersect(ray)
-            if intersection["distance"] < closest_intersection["distance"]:
-                closest_intersection = {
-                    "distance": intersection["distance"],
-                    "color": intersection["color"],
-                    "normal": intersection["normal"],
-                    "object_hit": plane
-                }
+            # Verificar interseções com planos
+            for plane in self.planes:
+                intersection = plane.intersect(ray)
+                if intersection["distance"] < closest_intersection["distance"]:
+                    closest_intersection = {
+                        "distance": intersection["distance"],
+                        "color": intersection["color"],
+                        "normal": intersection["normal"],
+                        "object_hit": plane
+                    }
 
-        # Verificar interseções com malhas triangulares
-        for mesh in self.meshes:
-            intersection = mesh.intersect(ray)
-            if intersection and intersection["distance"] < closest_intersection["distance"]:
-                closest_intersection = {
-                    "distance": intersection["distance"],
-                    "color": intersection["color"],
-                    "normal": intersection["normal"],
-                    "object_hit": mesh
-                }
+            # Verificar interseções com malhas triangulares
+            for mesh in self.meshes:
+                intersection = mesh.intersect(ray)
+                if intersection and intersection["distance"] < closest_intersection["distance"]:
+                    closest_intersection = {
+                        "distance": intersection["distance"],
+                        "color": intersection["color"],
+                        "normal": intersection["normal"],
+                        "object_hit": mesh
+                    }
 
         return closest_intersection
 
@@ -85,15 +95,7 @@ class Scene():
         
         surface = Surface(point, matched['normal'], matched['color'], matched['distance'])
         return multColor(matched["color"], self.phong(ray, surface, layer, matched["object_hit"].material))
-        
 
-#     color = color + (
-#         traceRay(Ray(ray.pointAt(surface.distance + 0.01), surface.getRefraction(ray.direction * -1.0, box.getRefractionIndex())), layer+1)
-#             * box.getTransmissionCoefficient()
-#     );
-
-#     return color;
-# }
     def phong(self, ray: Ray, surface: Surface, layer: int, material: Material):
         if layer > 4: 
             return Color(0, 0, 0)

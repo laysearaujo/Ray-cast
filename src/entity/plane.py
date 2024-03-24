@@ -37,3 +37,14 @@ class Plane:
                 "distance": float('inf'),
                 "normal": self.normal  # Mesmo não havendo interseção válida, a normal é constante
             }
+
+    def bounds(self):
+        # Como o plano é infinito, seus limites serão um intervalo muito grande
+        # Aqui, estamos definindo um cubo muito grande em torno do plano
+        min_bound = Vector(float('-inf'), float('-inf'), float('-inf'))
+        max_bound = Vector(float('inf'), float('inf'), float('inf'))
+        return min_bound, max_bound
+
+    def intersect_bounds(self, bounds):
+        # Como o plano é infinito, ele sempre intersecta com os limites do nó do octree
+        return True

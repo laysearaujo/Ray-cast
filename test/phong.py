@@ -5,13 +5,11 @@ import numpy as np
 from src.graphic.camera import Camera
 from src.graphic.scene import Scene
 from src.geometry.vector import Vector
-from src.geometry.triangularMesh import TriangularMesh
 from src.entity.sphere import Sphere
 from src.entity.plane import Plane
 from src.graphic.color import Color
 from src.graphic.light import Light
 from src.graphic.material import Material
-from src.geometry.octree import Octree
 
 def main():
     width, height = 800, 600
@@ -76,15 +74,12 @@ def main():
     for plane in planes:
         scene.addPlane(plane)
 
-    octree = Octree()
-    octree.build(spheres + planes)  # Construir o octree com esferas e planos
-
-
-    scene.setOctree(octree)
-
     camera = Camera(location, focus, v_up, distance, width, height)
 
-    # Tirar a cena usando a câmera e o octree
+    # # Teste de intersecção de raio
+    # ray = Ray(Vector(0,0,0), Vector(1,1,0))
+    # instersect1_color, instersect1_distance, _ = spheres[0].intersect(ray).values()
+
     matrix = camera.take(scene)
 
     # Convertendo a matriz de cores para uma imagem OpenCV
