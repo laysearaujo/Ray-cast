@@ -14,6 +14,10 @@ class Vector:
     
     def normalize(self):
         norm = self.norm()
+
+        if norm == 0:
+            return self
+
         self.x /= norm
         self.y /= norm
         self.z /= norm

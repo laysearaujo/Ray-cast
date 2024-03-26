@@ -28,6 +28,7 @@ class Camera:
             futures = {(executor.submit(process_pixel, y, x)): (y, x) for y in range(self.height) for x in range(self.width)}
 
             for future in concurrent.futures.as_completed(futures):
+
                 y, x = futures[future]
                 matrix[y][x] = future.result()
 

@@ -5,10 +5,11 @@ from src.geometry.vector import Vector
 from src.geometry.ray import Ray
 
 class TriangularMesh:
-    def __init__(self, vertices: List[Vector] = [], triangles: List[Triangle] = []):
+    def __init__(self, vertices: List[Vector], triangles: List[Triangle], material):
         self.vertices = vertices
         self.triangles = triangles
         self.normals = [triangle.normal() for triangle in triangles]
+        self.material = material
 
     def intersect(self, ray: Ray):
         closest_intersection = {
@@ -29,19 +30,19 @@ class TriangularMesh:
         self.triangles.append(triangle)
         self.normals.append(triangle.normal())
 
-    def __eq__(self, other):
-        if len(self.vertices) != len(other.vertices) or len(self.triangles) != len(other.triangles):
-            return False
+    # def __eq__(self, other):
+    #     if len(self.vertices) != len(other.vertices) or len(self.triangles) != len(other.triangles):
+    #         return False
         
-        for i in range(len(self.vertices)):
-            if self.vertices[i] != other.vertices[i]:
-                return False
+    #     for i in range(len(self.vertices)):
+    #         if self.vertices[i] != other.vertices[i]:
+    #             return False
         
-        for i in range(len(self.triangles)):
-            if self.triangles[i] != other.triangles[i]:
-                return False
+    #     for i in range(len(self.triangles)):
+    #         if self.triangles[i] != other.triangles[i]:
+    #             return False
         
-        return True
+    #     return True
 
     def bounds(self):
         # Inicializa os limites com os valores extremos para min e max

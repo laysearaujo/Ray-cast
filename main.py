@@ -12,13 +12,15 @@ from src.graphic.color import Color
 from src.graphic.light import Light
 from src.graphic.material import Material
 from src.geometry.octree import Octree
+from src.geometry.bezierSurface import BezierSurface
+from src.entity.triangle import Triangle
 
 def main():
-    width, height = 800, 600
+    width, height = 1000, 600
     v_up = Vector(0, 1, 0)
 
     # Ajustando os parâmetros da câmera para melhor visualização
-    location = Vector(15, 0, -15)  # Posição da câmera mais recuada
+    location = Vector(10, 0, -10)  # Posição da câmera mais recuada
     focus = Vector(0, 0, 0)       # Alterando a direção do foco para o centro da cena
     distance = 70                 # Reduzindo a distância da câmera
 
@@ -52,7 +54,6 @@ def main():
         2
     )
 
-
     spheres = [
         Sphere(Vector(-10, 0, 0), 5, Color(255, 0, 0), material),     # Esfera vermelha à esquerda
         Sphere(Vector(0, 0, 0), 5, Color(0, 255, 0), material1),      # Esfera verde no centro
@@ -62,6 +63,30 @@ def main():
     planes = [
         Plane(Vector(0, -15, 0), Vector(0, 1, 0), Color(255, 255, 255), material)  # Plano abaixo das esferas
     ]
+
+    meshs = []
+
+    control_points = np.array([
+        [[-2, 2, 0], [0, 2, 0], [2, 2, 0]],
+        [[-2, 0, 0], [0, 0, 4], [2, 0, 0]],
+        [[-2, -2, 0], [0, -2, 0], [2, -2, 0]]
+    ])  
+
+    bazier = BezierSurface(control_points, 3, 3)
+
+    vertices, triangles = bazier.build(material, Color(255, 255, 255), -4, 0, 0, 2)
+
+    meshs.append(TriangularMesh(vertices, triangles, material))
+  
+    control_points2 = np.array([[[-0.5, -2, 0], [1, 1, 1], [2, 2, 2]],
+                           [[2, 1, 0], [2, 0, -1], [2, 1, 1]],
+                           [[1, -1, 2], [0, 0.5, 2], [0.5, 1, 2]]])
+
+    bazier2 = BezierSurface(control_points2, 3, 3)
+
+    vertices, triangles = bazier2.build(material, Color(255, 255, 255), -3, 0, 10, 2)
+
+    meshs.append(TriangularMesh(vertices, triangles, material))
 
     scene = Scene()
 
@@ -75,10 +100,12 @@ def main():
     
     for plane in planes:
         scene.addPlane(plane)
+    
+    for mesh in meshs:
+        scene.addMesh(mesh)
 
     octree = Octree()
-    octree.build(spheres + planes)  # Construir o octree com esferas e planos
-
+    octree.build(meshs)  # Construir o octree com esferas e planos
 
     scene.setOctree(octree)
 
