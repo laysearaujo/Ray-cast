@@ -1,128 +1,84 @@
 import cv2
-import math
 import numpy as np
 
 from src.graphic.camera import Camera
 from src.graphic.scene import Scene
 from src.geometry.vector import Vector
-from src.geometry.triangularMesh import TriangularMesh
-from src.entity.sphere import Sphere
-from src.entity.plane import Plane
 from src.graphic.color import Color
 from src.graphic.light import Light
 from src.graphic.material import Material
-from src.geometry.octree import Octree
 from src.geometry.bezierSurface import BezierSurface
-from src.entity.triangle import Triangle
+from src.geometry.triangularMesh import TriangularMesh
+from src.geometry.octree import Octree
 
 def main():
+    # Configurações da janela de renderização
     width, height = 1000, 600
-    v_up = Vector(0, 1, 0)
 
-    # Ajustando os parâmetros da câmera para melhor visualização
-    location = Vector(10, 0, -10)  # Posição da câmera mais recuada
-    focus = Vector(0, 0, 0)       # Alterando a direção do foco para o centro da cena
-    distance = 70                 # Reduzindo a distância da câmera
+    # Configurações da câmera
+    camera_location = Vector(0, 0, -20)  # Posição da câmera ajustada para dentro da curva
+    camera_focus = Vector(0, 0, 0)
+    camera_up = Vector(0, -1, 0)
+    camera_distance = 10
 
-    material = Material(
-        Color(125, 125, 125),
-        Color(200, 200, 200),
-        Color(25, 25, 25),
-        Color(25, 25, 25),
-        Color(25, 25, 25),
-        1,
-        1
-    )
+    # Girar a câmera em torno do eixo Z em 5 graus
+    rotation_angle = 4.5  # Graus
+    camera_location = camera_location.rotateX(rotation_angle)
+    camera_focus = camera_focus.rotateZ(rotation_angle)
+    camera_up = camera_up.rotateZ(0)
 
+    # Configurações dos materiais
     material1 = Material(
-        Color(125, 125, 125),
-        Color(200, 200, 200),
-        Color(25, 25, 25),
-        Color(25, 25, 25),
-        Color(25, 25, 25),
-        1,
-        1
+        Color(125, 125, 125),  # Ambient
+        Color(200, 200, 200),  # Diffuse
+        Color(25, 25, 25),     # Specular
+        Color(25, 25, 25),     # Reflection
+        Color(25, 25, 25),     # Refraction
+        1,                     # Shininess
+        1                      # Transparency
     )
 
-    material2 = Material(
-        Color(10, 10, 10),
-        Color(10, 10, 10),
-        Color(10, 10, 10),
-        Color(10, 10, 10),
-        Color(190, 190, 190),
-        200,
-        2
-    )
-
-    spheres = [
-        Sphere(Vector(-10, 0, 0), 5, Color(255, 0, 0), material),     # Esfera vermelha à esquerda
-        Sphere(Vector(0, 0, 0), 5, Color(0, 255, 0), material1),      # Esfera verde no centro
-        Sphere(Vector(10, 0, 0), 5, Color(255, 255, 255), material2)      # Esfera azul à direita
-    ]
-
-    planes = [
-        Plane(Vector(0, -15, 0), Vector(0, 1, 0), Color(255, 255, 255), material)  # Plano abaixo das esferas
-    ]
-
-    meshs = []
-
+    # Criação da superfície de Bézier
     control_points = np.array([
         [[-2, 2, 0], [0, 2, 0], [2, 2, 0]],
         [[-2, 0, 0], [0, 0, 4], [2, 0, 0]],
         [[-2, -2, 0], [0, -2, 0], [2, -2, 0]]
-    ])  
+    ])
 
-    bazier = BezierSurface(control_points, 3, 3)
+    bezier_surface = BezierSurface(control_points, 10, 10)
+    vertices, triangles = bezier_surface.build(material1, Color(255, 255, 255), -4, 0, 0, 2)
+    mesh = TriangularMesh(vertices, triangles, material1)
 
-    vertices, triangles = bazier.build(material, Color(255, 255, 255), -4, 0, 0, 2)
 
-    meshs.append(TriangularMesh(vertices, triangles, material))
-  
-    control_points2 = np.array([[[-0.5, -2, 0], [1, 1, 1], [2, 2, 2]],
-                           [[2, 1, 0], [2, 0, -1], [2, 1, 1]],
-                           [[1, -1, 2], [0, 0.5, 2], [0.5, 1, 2]]])
+    # Configuração das luzes
+    lights = [
+        Light(Vector(1, 64, 10), Color(255, 255, 255)),
+        Light(Vector(49, 20, 3), Color(255, 255, 255))
+    ]
 
-    bazier2 = BezierSurface(control_points2, 3, 3)
-
-    vertices, triangles = bazier2.build(material, Color(255, 255, 255), -3, 0, 10, 2)
-
-    meshs.append(TriangularMesh(vertices, triangles, material))
-
+    # Criação da cena
     scene = Scene()
+    scene.addMesh(mesh)
+    for light in lights:
+        scene.addLight(light)
 
-    light = Light(Vector(1, 64, 10), Color(255, 255, 255))
-    scene.addLight(light)
-    light = Light(Vector(49, 20, 3), Color(255, 255, 255))
-    scene.addLight(light)
-
-    for sphere in spheres:
-        scene.addSphere(sphere)
-    
-    for plane in planes:
-        scene.addPlane(plane)
-    
-    for mesh in meshs:
-        scene.addMesh(mesh)
-
+    # Construção do octree
     octree = Octree()
-    octree.build(meshs)  # Construir o octree com esferas e planos
-
+    octree.build([mesh])
     scene.setOctree(octree)
 
-    camera = Camera(location, focus, v_up, distance, width, height)
-
-    # Tirar a cena usando a câmera e o octree
+    # Configuração e renderização da cena
+    camera = Camera(camera_location, camera_focus, camera_up, camera_distance, width, height)
     matrix = camera.take(scene)
 
-    # Convertendo a matriz de cores para uma imagem OpenCV
+    # Conversão da matriz de cores para uma imagem OpenCV
     img = np.zeros((height, width, 3), dtype=np.uint8)
-
     for y in range(height):
         for x in range(width):
             color = matrix[y][x]
             img[y][x] = [int(color.r), int(color.g), int(color.b)]
 
-    # Exibir a imagem usando OpenCV
+    # Exibição da imagem usando OpenCV
     cv2.imshow('Render', img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()

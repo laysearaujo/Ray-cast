@@ -30,20 +30,6 @@ class TriangularMesh:
         self.triangles.append(triangle)
         self.normals.append(triangle.normal())
 
-    # def __eq__(self, other):
-    #     if len(self.vertices) != len(other.vertices) or len(self.triangles) != len(other.triangles):
-    #         return False
-        
-    #     for i in range(len(self.vertices)):
-    #         if self.vertices[i] != other.vertices[i]:
-    #             return False
-        
-    #     for i in range(len(self.triangles)):
-    #         if self.triangles[i] != other.triangles[i]:
-    #             return False
-        
-    #     return True
-
     def bounds(self):
         # Inicializa os limites com os valores extremos para min e max
         min_bound = Vector(float('inf'), float('inf'), float('inf'))

@@ -1,128 +1,72 @@
 import numpy as np
-import matplotlib.pyplot as pyplot
-import math
-import cv2
 from src.entity.triangle import Triangle
 from src.graphic.color import Color
 from src.geometry.vector import Vector
 
-
-
 class BezierSurface:
 
-    def __init__(self, control_points, uCELLS=100, wCELLS=100):
+    def __init__(self, control_points, u_cells=100, w_cells=100):
         self.control_points = control_points
-        self.uCELLS = uCELLS
-        self.wCELLS = wCELLS
-        self.xBezier = None 
-        self.yBezier = None
-        self.zBezier = None
+        self.u_cells = u_cells
+        self.w_cells = w_cells
+        self.x_bezier = None 
+        self.y_bezier = None
+        self.z_bezier = None
 
+    def build(self, material, color: Color, x_offset=0, y_offset=0, z_offset=0, scale=1):
+        u_pts = np.size(self.control_points[0], 0)
+        w_pts = np.size(self.control_points[0], 1)
+        n = u_pts - 1
+        m = w_pts - 1
 
-    def build(self, material, color: Color, xOffset=0, yOffset=0, zOffset=0, scalle = 1):
+        u = np.linspace(0, 1, self.u_cells)
+        w = np.linspace(0, 1, self.w_cells)
 
-        uPTS = np.size(self.control_points[0], 0)
-        wPTS = np.size(self.control_points[0], 1)
+        self.x_bezier = np.zeros((self.u_cells, self.w_cells))
+        self.y_bezier = np.zeros((self.u_cells, self.w_cells))
+        self.z_bezier = np.zeros((self.u_cells, self.w_cells))
 
-        n = uPTS - 1
-        m = wPTS - 1
-
-        u = np.linspace(0, 1, self.uCELLS)
-        w = np.linspace(0, 1, self.wCELLS)
-
-        self.xBezier = np.zeros((self.uCELLS, self.wCELLS))
-        self.yBezier = np.zeros((self.uCELLS, self.wCELLS))
-        self.zBezier = np.zeros((self.uCELLS, self.wCELLS))
-
-        for i in range(0, uPTS):
-            for j in range(0, wPTS):
+        for i in range(0, u_pts):
+            for j in range(0, w_pts):
                 Jt = self.J(n, i, u).transpose()
 
-                self.xBezier = Jt * self.K(m, j, w) * self.control_points[0, i, j] +  self.xBezier
-                self.yBezier = Jt * self.K(m, j, w) * self.control_points[1, i, j] +  self.yBezier
-                self.zBezier = Jt * self.K(m, j, w) * self.control_points[2, i, j] +  self.zBezier
+                self.x_bezier += np.dot(Jt, self.K(m, j, w)) * self.control_points[0, i, j]
+                self.y_bezier += np.dot(Jt, self.K(m, j, w)) * self.control_points[1, i, j]
+                self.z_bezier += np.dot(Jt, self.K(m, j, w)) * self.control_points[2, i, j]
 
-        triangles = []
-        trianglesCV = []
-        verticesCV = []
+        self.x_bezier *= scale   
+        self.y_bezier *= scale
+        self.z_bezier *= scale
 
-        self.xBezier *= scalle   
-        self.yBezier *= scalle
-        self.zBezier *= scalle
+        self.x_bezier += x_offset
+        self.y_bezier += y_offset
+        self.z_bezier += z_offset
 
-        self.xBezier = self.xBezier + xOffset
-        self.yBezier = self.yBezier + yOffset
-        self.zBezier = self.zBezier + zOffset
+        vertices_cv, triangles_cv = [], []
 
-        for i in range(self.uCELLS - 1):
-            for j in range(self.wCELLS - 1):
+        for i in range(self.u_cells - 1):
+            for j in range(self.w_cells - 1):
+                v1 = Vector(self.x_bezier[i, j], self.y_bezier[i, j], self.z_bezier[i, j])
+                v2 = Vector(self.x_bezier[i+1, j], self.y_bezier[i+1, j], self.z_bezier[i+1, j])
+                v3 = Vector(self.x_bezier[i, j+1], self.y_bezier[i, j+1], self.z_bezier[i, j+1])
 
-                vector1 = Vector(self.xBezier[i, j], self.yBezier[i, j], self.zBezier[i, j])
-                vector2 = Vector(self.xBezier[i+1, j], self.yBezier[i+1, j], self.zBezier[i+1, j])
-                vector3 = Vector(self.xBezier[i, j+1], self.yBezier[i, j+1], self.zBezier[i, j+1])
+                vertices_cv.extend([v1, v2, v3])
+                triangles_cv.append(Triangle(v1, v2, v3, Color(0, 255, 0), material=material))
 
-                verticesCV.append(vector1)
-                verticesCV.append(vector2)
-                verticesCV.append(vector3)
+                v1 = Vector(self.x_bezier[i+1, j], self.y_bezier[i+1, j], self.z_bezier[i+1, j])
+                v2 = Vector(self.x_bezier[i+1, j+1], self.y_bezier[i+1, j+1], self.z_bezier[i+1, j+1])
+                v3 = Vector(self.x_bezier[i, j+1], self.y_bezier[i, j+1], self.z_bezier[i, j+1])
 
-                trianglesCV.append(Triangle(vector1, vector2, vector3, Color(0, 255, 0), material=material))
+                vertices_cv.extend([v1, v2, v3])
+                triangles_cv.append(Triangle(v1, v2, v3, Color(0, 255, 0), material=material))
 
-                vector1 = Vector(self.xBezier[i+1, j], self.yBezier[i+1, j], self.zBezier[i+1, j])
-                vector2 = Vector(self.xBezier[i+1, j+1], self.yBezier[i+1, j+1], self.zBezier[i+1, j+1])
-                vector3 = Vector(self.xBezier[i, j+1], self.yBezier[i, j+1], self.zBezier[i, j+1])
-
-                verticesCV.append(vector1)
-                verticesCV.append(vector2)
-                verticesCV.append(vector3)
-
-                trianglesCV.append(Triangle(vector1, vector2, vector3, Color(0, 255, 0), material=material))
-
-        return verticesCV, trianglesCV
-
-
-    def plot():
-
-        for i in range(self.uCELLS - 1):
-            for j in range(self.wCELLS - 1):
-        
-                # Coordenadas dos vértices do triângulo
-                v0 = [self.xBezier[i, j], self.yBezier[i, j], self.zBezier[i, j]]
-                v1 = [self.xBezier[i+1, j], self.yBezier[i+1, j], self.zBezier[i+1, j]]
-                v2 = [self.xBezier[i, j+1], self.yBezier[i, j+1], self.zBezier[i, j+1]]
-                
-                # Adiciona os vértices do triângulo à lista de triângulos
-                triangles.append([v0, v1, v2])
-
-                # Coordenadas dos vértices do segundo triângulo
-                v0 = [self.xBezier[i+1, j], self.yBezier[i+1, j], zBezier[i+1, j]]
-                v1 = [self.xBezier[i+1, j+1], self.yBezier[i+1, j+1], zBezier[i+1, j+1]]
-                v2 = [self.xBezier[i, j+1], self.yBezier[i, j+1], self.zBezier[i, j+1]]
-                
-                # Adiciona os vértices do segundo triângulo à lista de triângulos
-                triangles.append([v0, v1, v2])
-
-        # Cria a figura e os eixos 3D
-        fig = pyplot.figure()
-        ax = fig.add_subplot(111, projection='3d')
-
-        # Plota os triângulos
-        for triangle in triangles:
-            triangle = np.array(triangle)
-            ax.plot_trisurf(triangle[:, 0], triangle[:, 1], triangle[:, 2], color='blue')
-
-        # Configura os rótulos dos eixos
-        ax.set_xlabel('X')
-        ax.set_ylabel('Y')
-        ax.set_zlabel('Z')
-
-        # Mostra o gráfico
-        pyplot.show() 
+        return vertices_cv, triangles_cv
 
     def Ni(self, n, i):
-        return math.factorial(n) / (math.factorial(i) * math.factorial(n - i))
+        return np.math.factorial(n) / (np.math.factorial(i) * np.math.factorial(n - i))
 
     def Mj(self, m, j):
-        return math.factorial(m) / (math.factorial(j) * math.factorial(m - j))
+        return np.math.factorial(m) / (np.math.factorial(j) * np.math.factorial(m - j))
 
     def J(self, n, i, u):
         return np.matrix(self.Ni(n, i) * (u ** i) * (1 - u) ** (n - i))
@@ -137,5 +81,3 @@ class BezierSurface:
             [-np.sin(angle), 0, np.cos(angle)]
         ])
         return np.dot(points, rotation_matrix.T)
-
-
